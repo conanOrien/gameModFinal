@@ -1,0 +1,70 @@
+﻿Build started 4/7/2016 8:42:41 PM.
+     1>Project "D:\College Work\IT266\QUAKE2\game.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching ".\release\game.unsuccessfulbuild".
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Z7 /nologo /W1 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D _VC80_UPGRADE=0x0600 /D _WINDLL /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\release\\" /Fd".\release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt g_weapon.c
+         g_weapon.c
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetPath(D:\College Work\IT266\QUAKE2\..\..\..\Steam\steamapps\common\Quake 2\baseq2\gamex86.dll.dll) does not match the Linker's OutputFile property value (D:\College Work\IT266\QUAKE2\RELEASE\game.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(992,5): warning MSB8012: TargetName(gamex86.dll) does not match the Linker's OutputFile property value (game). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\College Work\IT266\QUAKE2\RELEASE\game.dll" /INCREMENTAL:NO /NOLOGO winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /DEF:".\game.def" /MANIFEST /ManifestFile:".\release\gamex86.dll.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"D:\Steam\steamapps\common\Quake 2\baseq2\gamex86.dll.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /BASE:"0x20000000" /DYNAMICBASE /NXCOMPAT /IMPLIB:".\..\release\gamex86.lib" /MACHINE:X86 /DLL .\release\g_ai.obj
+         .\release\g_chase.obj
+         .\release\g_cmds.obj
+         .\release\g_combat.obj
+         .\release\g_func.obj
+         .\release\g_items.obj
+         .\release\g_main.obj
+         .\release\g_misc.obj
+         .\release\g_monster.obj
+         .\release\g_phys.obj
+         .\release\g_save.obj
+         .\release\g_spawn.obj
+         .\release\g_svcmds.obj
+         .\release\g_target.obj
+         .\release\g_trigger.obj
+         .\release\g_turret.obj
+         .\release\g_utils.obj
+         .\release\g_weapon.obj
+         .\release\m_actor.obj
+         .\release\m_berserk.obj
+         .\release\m_boss2.obj
+         .\release\m_boss3.obj
+         .\release\m_boss31.obj
+         .\release\m_boss32.obj
+         .\release\m_brain.obj
+         .\release\m_chick.obj
+         .\release\m_flash.obj
+         .\release\m_flipper.obj
+         .\release\m_float.obj
+         .\release\m_flyer.obj
+         .\release\m_gladiator.obj
+         .\release\m_gunner.obj
+         .\release\m_hover.obj
+         .\release\m_infantry.obj
+         .\release\m_insane.obj
+         .\release\m_medic.obj
+         .\release\m_move.obj
+         .\release\m_mutant.obj
+         .\release\m_parasite.obj
+         .\release\m_soldier.obj
+         .\release\m_supertank.obj
+         .\release\m_tank.obj
+         .\release\p_client.obj
+         .\release\p_hud.obj
+         .\release\p_trail.obj
+         .\release\p_view.obj
+         .\release\p_weapon.obj
+         .\release\q_shared.obj
+            Creating library .\..\release\gamex86.lib and object .\..\release\gamex86.exp
+         game.vcxproj -> D:\College Work\IT266\QUAKE2\..\..\..\Steam\steamapps\common\Quake 2\baseq2\gamex86.dll.dll
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"D:\College Work\IT266\QUAKE2\RELEASE\game.dll;#2" /manifest .\release\gamex86.dll.dll.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\release\game.unsuccessfulbuild".
+         Touching ".\release\game.lastbuildstate".
+     1>Done Building Project "D:\College Work\IT266\QUAKE2\game.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.32

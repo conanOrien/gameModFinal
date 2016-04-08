@@ -897,3 +897,74 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 
 	gi.linkentity (bfg);
 }
+
+
+//**********************
+// MEDIGUN
+//**********************
+void medGun_Impact(edict_t *self, vec3_t start, vec3_t aimdir, int damage)
+{
+	int		i;
+	int		kick = 0;
+	for(i = 0; i<=5; i++)
+	{
+		aimdir[0] += crandom();
+		aimdir[1] += crandom();
+		fire_rail(self, start, aimdir, damage, kick);
+	}
+}
+
+void fire_med (edict_t *self, vec3_t start, vec3_t aimdir, int damage)
+{
+	vec3_t		from;
+	vec3_t		end;
+	trace_t		tr;
+	edict_t		*ignore;
+	int			mask;
+	int			kick =0;
+	qboolean	water;
+	vec3_t		newDir;
+
+	VectorMA (start, 8192, aimdir, end);
+	VectorCopy (start, from);
+	ignore = self;
+	water = false;
+	mask = MASK_SHOT|CONTENTS_SLIME|CONTENTS_LAVA;
+
+	tr = gi.trace (from, NULL, NULL, end, ignore, mask);
+	if (tr.contents & (CONTENTS_SLIME|CONTENTS_LAVA))
+	{
+		mask &= ~(CONTENTS_SLIME|CONTENTS_LAVA);
+		water = true;
+	}
+	if ((tr.ent != self) && (tr.ent->takedamage))
+		{T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_RAILGUN);}
+				
+		
+
+	VectorCopy (tr.endpos, from);
+
+	// send gun puff / flash
+	gi.WriteByte (svc_temp_entity);
+	gi.WriteByte (TE_RAILTRAIL);
+	gi.WritePosition (start);
+	gi.WritePosition (tr.endpos);
+	gi.multicast (self->s.origin, MULTICAST_PHS);
+//	gi.multicast (start, MULTICAST_PHS);
+	if (water)
+	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_RAILTRAIL);
+		gi.WritePosition (start);
+		gi.WritePosition (tr.endpos);
+		gi.multicast (tr.endpos, MULTICAST_PHS);
+	}
+
+	if (self->client)
+		PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+
+	medGun_Impact(self, tr.endpos,aimdir,damage);
+}
+
+
+
