@@ -906,7 +906,7 @@ void medGun_Impact(edict_t *self, vec3_t start, vec3_t aimdir, int damage)
 {
 	int		i;
 	int		kick = 0;
-	for(i = 0; i<=5; i++)
+	for(i = 0; i<=3; i++)
 	{
 		aimdir[0] += crandom();
 		aimdir[1] += crandom();

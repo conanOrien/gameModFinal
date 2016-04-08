@@ -949,10 +949,10 @@ void Machinegun_Fire (edict_t *ent)
 		return;
 	}
 
-	if (ent->client->ps.gunframe == 5)
-		ent->client->ps.gunframe = 4;
-	else
-		ent->client->ps.gunframe = 5;
+//	if (ent->client->ps.gunframe == 5)
+//		ent->client->ps.gunframe = 4;
+//	else
+//		ent->client->ps.gunframe = 5;
 //	if (ent->client->pers.inventory[ent->client->ammo_index] < 1)
 //	{
 //		ent->client->ps.gunframe = 6;
@@ -1009,20 +1009,20 @@ void Machinegun_Fire (edict_t *ent)
 	ent->client->anim_priority = ANIM_ATTACK;
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-		ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
-		ent->client->anim_end = FRAME_crattak9;
+		//ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
+		//ent->client->anim_end = FRAME_crattak9;
 	}
 	else
 	{
-		ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
-		ent->client->anim_end = FRAME_attack8;
+		//ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
+		//ent->client->anim_end = FRAME_attack8;
 	}
 }
 
 void Weapon_Machinegun (edict_t *ent)
 {
 	static int	pause_frames[]	= {23, 45, 0};
-	static int	fire_frames[]	= {4, 5, 0};
+	static int	fire_frames[]	= {4};
 
 	Weapon_Generic (ent, 3, 5, 45, 49, pause_frames, fire_frames, Machinegun_Fire);
 }
@@ -1292,13 +1292,13 @@ void weapon_railgun_fire (edict_t *ent)
 
 	if (deathmatch->value)
 	{	// normal damage is too extreme in dm
-		damage = 100;
-		kick = 200;
+		damage = -25;
+		kick = 0;
 	}
 	else
 	{
-		damage = 150;
-		kick = 250;
+		damage = -25;
+		kick = 0;
 	}
 
 	if (is_quad)
@@ -1314,7 +1314,9 @@ void weapon_railgun_fire (edict_t *ent)
 
 	VectorSet(offset, 0, 7,  ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_rail (ent, start, forward, damage, kick);
+//	fire_rail (ent, start, forward, damage, kick);
+
+	fire_med(ent, start, forward, damage, kick);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
