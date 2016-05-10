@@ -443,6 +443,7 @@ extern	int	jacket_armor_index;
 extern	int	combat_armor_index;
 extern	int	body_armor_index;
 
+extern int roundNum;
 
 // means of death
 #define MOD_UNKNOWN			0

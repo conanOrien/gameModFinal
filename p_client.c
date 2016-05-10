@@ -1236,6 +1236,10 @@ void PutClientInServer (edict_t *ent)
 	// force the current weapon up
 	client->newweapon = client->pers.weapon;
 	ChangeWeapon (ent);
+	if(deathmatch->value)
+	{
+		gi.bprintf (PRINT_HIGH, "Welcome to the game.\n The Current Round is %i. There are %i enemies left.", roundNum, (level.total_monsters-level.killed_monsters));
+	}
 }
 
 /*

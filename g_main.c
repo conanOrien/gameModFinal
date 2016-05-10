@@ -10,9 +10,11 @@ spawn_temp_t	st;
 int	sm_meat_index;
 int	snd_fry;
 int meansOfDeath;
-int monsterTime;
-int roundNum = 0;
-int monstNum;
+int roundNum;
+
+int monsterTime = 100;
+int roundStart;
+int numMonsters;
 
 edict_t		*g_edicts;
 
@@ -94,7 +96,7 @@ void SP_monster_jorg (edict_t *self);
 void SP_monster_boss3_stand (edict_t *self);
 void SelectSpawnPoint (edict_t *ent, vec3_t origin, vec3_t angles);
 void walkmonster_start_go (edict_t *self);
-void monstSpawn(int roundNum);
+void monstSpawn();
 
 //===================================================================
 
@@ -314,6 +316,11 @@ void CheckDMRules (void)
 	int			i;
 	gclient_t	*cl;
 
+	if(level.total_monsters == 0)
+	{
+		roundNum = 0;
+	}
+
 	if (level.intermissiontime)
 		return;
 
@@ -397,22 +404,29 @@ void G_RunFrame (void)
 	// choose a client for monsters to target this frame
 	AI_SetSightClient ();
 
-	//decrement monsterSpawn timer, reset it at 0
-	if(monsterTime > 0)
-	{
-		monsterTime -= 1;
-	}
-	if(monsterTime <= 0)
-	{
-		gi.bprintf(PRINT_HIGH, "Total Monsters Remaining: %i\n", level.total_monsters-level.killed_monsters);
-		//test code for spawning monsters in DM
-		if (deathmatch->value)
+	//DM code
+	if (deathmatch->value)
+	{	
+//		gi.bprintf(PRINT_HIGH, "Round %i\n", roundNum);
+
+		if(roundNum == 0 && monsterTime > 0)
 		{
-			monstSpawn(roundNum);
+			monsterTime --;
+		}		
+		if(roundNum == 0 && monsterTime == 0)
+		{
+			monstSpawn();
 		}
-		
-		monsterTime = 100;
+		if(roundNum == 1 && level.killed_monsters == level.total_monsters)
+		{
+			//Print congrats
+			//notify of/advance to next round
+			//grant powerups
+			gi.bprintf(PRINT_HIGH, "Round 1 Complete.. Enjoy your powerups \nBeginning Round 2");
+			roundNum ++;
+		}
 	}
+
 
 
 		
@@ -466,21 +480,28 @@ void G_RunFrame (void)
 	// build the playerstate_t structures for all players
 	ClientEndServerFrames ();
 }
-void monstSpawn(int roundNum)
+
+void monstSpawn()
 {
 	int dice;
+	roundStart = 0;
+	
 	if(roundNum == 0)
 	{
-		roundNum ++;
-		gi.bprintf(PRINT_HIGH, "Beginning Round 1. Monsters Will Spawn in 10 Seconds");
+		roundNum = 1;
 	}
 	if(roundNum == 1)
 	{
 		//spawn number of monsters for first round
 		//have a random number gen pick the monster that is spawned, 4 possible options so a 1-4 rand
 		//when monsters are dead, increment numRound
-		monstNum = 10;
-		while(monstNum > (level.total_monsters-level.killed_monsters))
+		if(roundStart == 0)
+		{
+			numMonsters = 10;
+			gi.bprintf(PRINT_HIGH, "Round 1 - Total Monsters: %i\n", level.total_monsters-level.killed_monsters);
+			roundStart ++;
+		}
+		while((level.total_monsters-level.killed_monsters) < numMonsters)
 		{
 			dice = (rand() % 4+1-1)+1;
 			if(dice == 1)
@@ -495,7 +516,7 @@ void monstSpawn(int roundNum)
 				SP_monster_soldier(monster);
 				walkmonster_start_go(monster);
 			}
-			if(dice == 2)
+			if(dice == 3)
 			{
 				edict_t *monster;
 				vec3_t origin,angles;
@@ -507,7 +528,7 @@ void monstSpawn(int roundNum)
 				SP_monster_berserk(monster);
 				walkmonster_start_go(monster);
 			}
-			if(dice == 3)
+			if(dice == 2)
 			{
 				edict_t *monster;
 				vec3_t origin,angles;
@@ -535,7 +556,7 @@ void monstSpawn(int roundNum)
 	}
 	if(roundNum == 2)
 	{
-		monstNum = 20;
+		numMonsters = 20;
 	}
 	if(roundNum == 3)
 	{

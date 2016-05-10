@@ -1,7 +1,7 @@
-﻿Build started 5/9/2016 11:21:02 PM.
+﻿Build started 5/10/2016 4:00:20 AM.
      1>Project "D:\College Work\IT266\QUAKE2\game.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching ".\release\game.unsuccessfulbuild".
+         Creating ".\release\game.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Z7 /nologo /W1 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D _VC80_UPGRADE=0x0600 /D _WINDLL /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\release\\" /Fd".\release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt g_main.c
          g_main.c
