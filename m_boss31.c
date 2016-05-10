@@ -676,11 +676,11 @@ void MakronPrecache (void);
 */
 void SP_monster_jorg (edict_t *self)
 {
-	if (deathmatch->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
+	//if (deathmatch->value)
+	//{
+	//	G_FreeEdict (self);
+	//	return;
+	//}
 
 	sound_pain1 = gi.soundindex ("boss3/bs3pain1.wav");
 	sound_pain2 = gi.soundindex ("boss3/bs3pain2.wav");

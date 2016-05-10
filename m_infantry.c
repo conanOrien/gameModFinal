@@ -536,11 +536,11 @@ void infantry_attack(edict_t *self)
 */
 void SP_monster_infantry (edict_t *self)
 {
-	if (deathmatch->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
+	//if (deathmatch->value)
+	//{
+	//	G_FreeEdict (self);
+	//	return;
+	//}
 
 	sound_pain1 = gi.soundindex ("infantry/infpain1.wav");
 	sound_pain2 = gi.soundindex ("infantry/infpain2.wav");

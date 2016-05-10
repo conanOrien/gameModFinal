@@ -10,6 +10,9 @@ spawn_temp_t	st;
 int	sm_meat_index;
 int	snd_fry;
 int meansOfDeath;
+int monsterTime;
+int roundNum = 0;
+int monstNum;
 
 edict_t		*g_edicts;
 
@@ -68,6 +71,30 @@ void ReadLevel (char *filename);
 void InitGame (void);
 void G_RunFrame (void);
 
+void SP_monster_berserk (edict_t *self);
+void SP_monster_gladiator (edict_t *self);
+void SP_monster_gunner (edict_t *self);
+void SP_monster_infantry (edict_t *self);
+void SP_monster_soldier_light (edict_t *self);
+void SP_monster_soldier (edict_t *self);
+void SP_monster_soldier_ss (edict_t *self);
+void SP_monster_tank (edict_t *self);
+void SP_monster_medic (edict_t *self);
+void SP_monster_flipper (edict_t *self);
+void SP_monster_chick (edict_t *self);
+void SP_monster_parasite (edict_t *self);
+void SP_monster_flyer (edict_t *self);
+void SP_monster_brain (edict_t *self);
+void SP_monster_floater (edict_t *self);
+void SP_monster_hover (edict_t *self);
+void SP_monster_mutant (edict_t *self);
+void SP_monster_supertank (edict_t *self);
+void SP_monster_boss2 (edict_t *self);
+void SP_monster_jorg (edict_t *self);
+void SP_monster_boss3_stand (edict_t *self);
+void SelectSpawnPoint (edict_t *ent, vec3_t origin, vec3_t angles);
+void walkmonster_start_go (edict_t *self);
+void monstSpawn(int roundNum);
 
 //===================================================================
 
@@ -370,6 +397,25 @@ void G_RunFrame (void)
 	// choose a client for monsters to target this frame
 	AI_SetSightClient ();
 
+	//decrement monsterSpawn timer, reset it at 0
+	if(monsterTime > 0)
+	{
+		monsterTime -= 1;
+	}
+	if(monsterTime <= 0)
+	{
+		gi.bprintf(PRINT_HIGH, "Total Monsters Remaining: %i\n", level.total_monsters-level.killed_monsters);
+		//test code for spawning monsters in DM
+		if (deathmatch->value)
+		{
+			monstSpawn(roundNum);
+		}
+		
+		monsterTime = 100;
+	}
+
+
+		
 	// exit intermissions
 
 	if (level.exitintermission)
@@ -419,5 +465,83 @@ void G_RunFrame (void)
 
 	// build the playerstate_t structures for all players
 	ClientEndServerFrames ();
+}
+void monstSpawn(int roundNum)
+{
+	int dice;
+	if(roundNum == 0)
+	{
+		roundNum ++;
+		gi.bprintf(PRINT_HIGH, "Beginning Round 1. Monsters Will Spawn in 10 Seconds");
+	}
+	if(roundNum == 1)
+	{
+		//spawn number of monsters for first round
+		//have a random number gen pick the monster that is spawned, 4 possible options so a 1-4 rand
+		//when monsters are dead, increment numRound
+		monstNum = 10;
+		while(monstNum > (level.total_monsters-level.killed_monsters))
+		{
+			dice = (rand() % 4+1-1)+1;
+			if(dice == 1)
+			{
+				edict_t *monster;
+				vec3_t origin,angles;
+				monster = G_Spawn();
+				
+				SelectSpawnPoint (monster, origin, angles);
+				monster->classname = "monster_soldier";
+				VectorCopy(origin,monster->s.origin);
+				SP_monster_soldier(monster);
+				walkmonster_start_go(monster);
+			}
+			if(dice == 2)
+			{
+				edict_t *monster;
+				vec3_t origin,angles;
+				monster = G_Spawn();
+				
+				SelectSpawnPoint (monster, origin, angles);
+				monster->classname = "monster_berserk";
+				VectorCopy(origin,monster->s.origin);
+				SP_monster_berserk(monster);
+				walkmonster_start_go(monster);
+			}
+			if(dice == 3)
+			{
+				edict_t *monster;
+				vec3_t origin,angles;
+				monster = G_Spawn();
+				
+				SelectSpawnPoint (monster, origin, angles);
+				monster->classname = "monster_soldier_light";
+				VectorCopy(origin,monster->s.origin);
+				SP_monster_soldier_light(monster);
+				walkmonster_start_go(monster);
+			}
+			if(dice == 4)
+			{
+				edict_t *monster;
+				vec3_t origin,angles;
+				monster = G_Spawn();
+				
+				SelectSpawnPoint (monster, origin, angles);
+				monster->classname = "monster_soldier_ss";
+				VectorCopy(origin,monster->s.origin);
+				SP_monster_soldier_ss(monster);
+				walkmonster_start_go(monster);
+			}
+		}
+	}
+	if(roundNum == 2)
+	{
+		monstNum = 20;
+	}
+	if(roundNum == 3)
+	{
+	}
+	if(roundNum == 4)
+	{
+	}
 }
 

@@ -810,11 +810,11 @@ void MakronPrecache (void)
 */
 void SP_monster_makron (edict_t *self)
 {
-	if (deathmatch->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
+	//if (deathmatch->value)
+	//{
+	//	G_FreeEdict (self);
+	//	return;
+	//}
 
 	MakronPrecache ();
 

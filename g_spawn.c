@@ -556,12 +556,12 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 		{
 			if (deathmatch->value)
 			{
-				if ( ent->spawnflags & SPAWNFLAG_NOT_DEATHMATCH )
-				{
-					G_FreeEdict (ent);	
-					inhibit++;
-					continue;
-				}
+				//if ( ent->spawnflags & SPAWNFLAG_NOT_DEATHMATCH )
+				//{
+				//	G_FreeEdict (ent);	
+				//	inhibit++;
+				//	continue;
+				//}
 			}
 			else
 			{

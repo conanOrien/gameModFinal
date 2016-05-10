@@ -591,11 +591,11 @@ void floater_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 */
 void SP_monster_floater (edict_t *self)
 {
-	if (deathmatch->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
+	//if (deathmatch->value)
+	//{
+	//	G_FreeEdict (self);
+	//	return;
+	//}
 
 	sound_attack2 = gi.soundindex ("floater/fltatck2.wav");
 	sound_attack3 = gi.soundindex ("floater/fltatck3.wav");

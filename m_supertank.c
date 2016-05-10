@@ -652,11 +652,11 @@ void supertank_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int da
 */
 void SP_monster_supertank (edict_t *self)
 {
-	if (deathmatch->value)
-	{
-		G_FreeEdict (self);
-		return;
-	}
+	//if (deathmatch->value)
+	//{
+	//	G_FreeEdict (self);
+	//	return;
+	//}
 
 	sound_pain1 = gi.soundindex ("bosstank/btkpain1.wav");
 	sound_pain2 = gi.soundindex ("bosstank/btkpain2.wav");
