@@ -370,7 +370,9 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	}
 }	
 
-
+/*
+Healing bolt
+*/
 /*
 =================
 fire_grenade

@@ -122,7 +122,6 @@ void SP_info_player_coop(edict_t *self)
 		G_FreeEdict (self);
 		return;
 	}
-
 	if((Q_stricmp(level.mapname, "jail2") == 0)   ||
 	   (Q_stricmp(level.mapname, "jail4") == 0)   ||
 	   (Q_stricmp(level.mapname, "mine1") == 0)   ||
@@ -1736,6 +1735,102 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		if (other->inuse && other->client->chase_target == ent)
 			UpdateChaseCam(other);
 	}
+
+	if(client->pers.weapon == FindItem("Machinegun"))
+	{
+		//print a message
+		if(client->playerClass != 1)
+		{
+			gi.bprintf (PRINT_HIGH, "Selected Tank Class\n");
+
+			client->playerClass = 1;
+				if(client->playerClass == 1)
+				{	
+					client->ammoMod = 200;
+					client->healthMod = 100;
+					client->armorMod = 200;
+					if(client->pers.max_health != 100+client->healthMod)
+					{
+						//Sets current and persistent health caps
+						ent->max_health = 100+client->healthMod;
+						client->pers.max_health = 100+client->healthMod;
+
+						if(ent->health > ent->max_health)
+						{
+							ent->health = ent->max_health; //no overheal when switching classes
+						}
+						//Sets ammo caps
+						if(client->pers.max_bullets != 200+client->ammoMod)
+						{
+							client->pers.max_bullets = 200+client->ammoMod;
+						}
+						gi.bprintf(PRINT_HIGH, "Health and ammo maximum updated!\nHealth: %i\nAmmo: %i\n",client->pers.max_health, client->pers.max_bullets);
+					}
+				}
+		}
+	}
+	if(client->pers.weapon == FindItem("Shotgun"))
+	{
+		//print a message
+		if(client->playerClass != 2)
+		{
+			gi.bprintf (PRINT_HIGH, "Selected Medic Class\n");
+
+			client->playerClass = 2;
+				if(client->playerClass == 2)
+				{	
+					client->ammoMod = 0;
+					client->healthMod = -15;
+					client->armorMod = 200;
+					if(client->pers.max_health != 100+client->healthMod)
+					{
+						//Sets current and persistent health caps
+						ent->max_health = 100+client->healthMod;
+						client->pers.max_health = 100+client->healthMod;
+
+						if(ent->health > ent->max_health)
+						{
+							ent->health = ent->max_health; //no overheal when switching classes
+						}
+						//Sets ammo caps
+						client->pers.max_bullets = client->pers.max_bullets+client->ammoMod;
+						gi.bprintf(PRINT_HIGH, "Health and ammo maximum updated!\nHealth: %i\nAmmo: Unlimited\n",client->pers.max_health);
+					}
+				}
+		}
+	}
+
+	if(client->pers.weapon == FindItem("Grenade Launcher"))
+	{
+		//print a message
+		if(client->playerClass != 3)
+		{
+			gi.bprintf (PRINT_HIGH, "Selected DPS Class\n");
+
+			client->playerClass = 3;
+				if(client->playerClass == 3)
+				{	
+					client->ammoMod = 0;
+					client->healthMod = -25;
+					client->armorMod = 200;
+					if(client->pers.max_health != 100+client->healthMod)
+					{
+						//Sets current and persistent health caps
+						ent->max_health = 100+client->healthMod;
+						client->pers.max_health = 100+client->healthMod;
+
+						if(ent->health > ent->max_health)
+						{
+							ent->health = ent->max_health; //no overheal when switching classes
+						}
+						//Sets ammo caps
+						client->pers.max_bullets = client->pers.max_bullets+client->ammoMod;
+						gi.bprintf(PRINT_HIGH, "Health and ammo maximum updated!\nHealth: %i\nAmmo: %i\n",client->pers.max_health, client->pers.max_grenades);
+					}
+				}
+		}
+	}
+
 }
 
 

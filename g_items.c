@@ -766,6 +766,12 @@ void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf
 		if (ent->item->use)
 			other->client->pers.selected_item = other->client->ps.stats[STAT_SELECTED_ITEM] = ITEM_INDEX(ent->item);
 
+		//Logic to change class via weapon held
+//		if (ent->item->pickup_name == "weapon_shotgun")
+//		{
+//			other->client->playerClass = 1;
+//		}
+
 		if (ent->item->pickup == Pickup_Health)
 		{
 			if (ent->count == 2)

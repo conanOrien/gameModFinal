@@ -498,7 +498,7 @@ void monstSpawn()
 		if(roundStart == 0)
 		{
 			numMonsters = 10;
-			gi.bprintf(PRINT_HIGH, "Round 1 - Total Monsters: %i\n", level.total_monsters-level.killed_monsters);
+			gi.bprintf(PRINT_HIGH, "Round 1 - Total Monsters: 10");
 			roundStart ++;
 		}
 		while((level.total_monsters-level.killed_monsters) < numMonsters)
