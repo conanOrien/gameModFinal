@@ -460,7 +460,7 @@ void G_RunFrame (void)
 			//grant powerups
 			gi.bprintf(PRINT_HIGH, "Round 3 Complete.. Enjoy your powerups \nBeginning Final Round\n");
 			roundNum ++;
-			powerUpKey = 1;
+			powerUpKey = 3;
 			monstSpawn();
 		}
 		if(roundNum == 4 && level.killed_monsters == level.total_monsters)

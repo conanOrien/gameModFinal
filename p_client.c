@@ -1937,6 +1937,29 @@ void ClientBeginServerFrame (edict_t *ent)
 			G_FreeEdict(it_ent);}
 			powerUpKey = 0;
 	}
+	if(powerUpKey == 2)
+	{
+		it = FindItem("Quad Damage");
+		it_ent = G_Spawn();
+		it_ent->classname = it->classname;
+		SpawnItem (it_ent, it);
+		Touch_Item (it_ent, ent, NULL, NULL);
+		if (it_ent->inuse){
+			G_FreeEdict(it_ent);}
+		powerUpKey = 0;
+	}
+	if(powerUpKey == 3)
+	{
+		it = FindItem("Rebreather");
+		it_ent = G_Spawn();
+		it_ent->classname = it->classname;
+		SpawnItem (it_ent, it);
+		Touch_Item (it_ent, ent, NULL, NULL);
+		if (it_ent->inuse){
+			G_FreeEdict(it_ent);}
+		powerUpKey = 0;
+	}
+
 	if (client && client->invincible_framenum - level.framenum > 0 )
 	{
 		if(client->playerClass == 1)
@@ -1976,15 +1999,38 @@ void ClientBeginServerFrame (edict_t *ent)
 
 			}
 	}
-	if(powerUpKey == 2)
+	if (client && client->breather_framenum - level.framenum > 0 )
 	{
-		it = FindItem("Quad Damage");
-		it_ent = G_Spawn();
-		it_ent->classname = it->classname;
-		SpawnItem (it_ent, it);
-		Touch_Item (it_ent, ent, NULL, NULL);
-		if (it_ent->inuse){
-			G_FreeEdict(it_ent);}
-		powerUpKey = 0;
+		if(client->playerClass == 1)
+		{
+			//item = FindItem("Bullets");
+			/*if (item)
+			{
+				index = ITEM_INDEX(item);
+				if (ent->client->pers.inventory[index] > ent->client->pers.max_bullets)
+				{
+					ent->client->pers.inventory[index] = ent->client->pers.max_bullets;
+
+				}
+				else
+				{*/
+			Invuln = 1;
+			//	}
+		}
+			
+	
+		if(client->playerClass == 2 && ent->health < ent->client->pers.max_health )
+			{
+				Invuln = 1;
+			}
+		if(client->playerClass == 3)
+			{
+				//set some variable to true,
+				//Check for var in weapon code
+				//change weapon effect
+				ent->speed *= 5;
+
+			}
 	}
+
 }

@@ -204,6 +204,10 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 			if (tr.ent->takedamage)
 			{
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, mod);
+				if(tr.ent->health <= 10 && Invuln == 1)
+				{
+					//Grenade_Explode(tr.ent->);
+				}
 			}
 			else
 			{
@@ -962,6 +966,9 @@ void fire_heal_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int
 	edict_t		*ignore;
 	int			mask;
 	qboolean	water;
+	gitem_t		*it;
+	gitem_t		*item;
+	edict_t		*it_ent;
 
 	VectorMA (start, 8192, aimdir, end);
 	VectorCopy (start, from);
@@ -988,6 +995,33 @@ void fire_heal_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int
 
 			if ((tr.ent != self) && (tr.ent->client))
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_RAILGUN);
+				if(Invuln == 1)
+				{
+					if(tr.ent->client->playerClass == 1)
+					{
+						it = FindItem("Bullets");
+						it_ent = G_Spawn();
+						it_ent->classname = it->classname;
+						SpawnItem (it_ent, it);
+						Touch_Item (it_ent, tr.ent, NULL, NULL);
+						if (it_ent->inuse){
+						G_FreeEdict(it_ent);}
+					}
+					if(tr.ent->client->playerClass == 2)
+					{
+						return;
+					}
+					if(tr.ent->client->playerClass == 3)
+					{
+						it = FindItem("Grenades");
+						it_ent = G_Spawn();
+						it_ent->classname = it->classname;
+						SpawnItem (it_ent, it);
+						Touch_Item (it_ent, tr.ent, NULL, NULL);
+						if (it_ent->inuse){
+						G_FreeEdict(it_ent);}
+					}
+				}
 				ignore = NULL;
 		}
 
