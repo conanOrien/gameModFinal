@@ -1831,7 +1831,6 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				}
 		}
 	}
-
 }
 
 
@@ -1847,8 +1846,10 @@ void ClientBeginServerFrame (edict_t *ent)
 {
 	gclient_t	*client;
 	int			buttonMask;
+	int			index;
 	char		*pClass;
 	gitem_t		*it;
+	gitem_t		*item;
 	edict_t		*it_ent;
 
 	if (level.intermissiontime)
@@ -1919,9 +1920,10 @@ void ClientBeginServerFrame (edict_t *ent)
 		gi.bprintf(PRINT_HIGH, "\nCurrent Round:%i\nEnemies Left:%i\nClass:%s\n",roundNum, (level.total_monsters-level.killed_monsters), pClass);
 	}
 
-	if(powerUpKey>0)
+	if(powerUpKey==1)
 	{
-			it = FindItem("Quad Damage");
+			//it = FindItem("Quad Damage");
+			it = FindItem("Invulnerability");
 			it_ent = G_Spawn();
 			it_ent->classname = it->classname;
 			SpawnItem (it_ent, it);
@@ -1929,5 +1931,51 @@ void ClientBeginServerFrame (edict_t *ent)
 			if (it_ent->inuse){
 			G_FreeEdict(it_ent);}
 			powerUpKey = 0;
+	}
+	if (client && client->invincible_framenum - level.framenum > 0 )
+	{
+		if(client->playerClass == 1)
+		{
+			//item = FindItem("Bullets");
+			/*if (item)
+			{
+				index = ITEM_INDEX(item);
+				if (ent->client->pers.inventory[index] > ent->client->pers.max_bullets)
+				{
+					ent->client->pers.inventory[index] = ent->client->pers.max_bullets;
+
+				}
+				else
+				{*/
+					it = FindItem("Bullets");
+					it_ent = G_Spawn();
+					it_ent->classname = it->classname;
+					SpawnItem (it_ent, it);
+					Touch_Item (it_ent, ent, NULL, NULL);
+					if (it_ent->inuse){
+					G_FreeEdict(it_ent);}
+			//	}
+			}
+			
+	
+		if(client->playerClass == 2 && ent->health < ent->client->pers.max_health )
+			{
+				ent->health += 1;
+			}
+		if(client->playerClass == 3)
+		{
+			
+		}
+	}
+	if(powerUpKey == 2)
+	{
+		it = FindItem("Quad Damage");
+		it_ent = G_Spawn();
+		it_ent->classname = it->classname;
+		SpawnItem (it_ent, it);
+		Touch_Item (it_ent, ent, NULL, NULL);
+		if (it_ent->inuse){
+			G_FreeEdict(it_ent);}
+		powerUpKey = 0;
 	}
 }

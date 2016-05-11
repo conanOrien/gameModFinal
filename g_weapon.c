@@ -274,6 +274,7 @@ void fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int k
 
 	for (i = 0; i < count; i++)
 		fire_lead (self, start, aimdir, damage, kick, TE_SHOTGUN, hspread, vspread, mod);
+
 }
 
 
@@ -346,8 +347,8 @@ void heal_blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		else
 			mod = MOD_BLASTER;
 		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
-		if(self->owner->health < 150)
-			self->owner->health += self->dmg;
+		if(self->owner->health < 110)
+			self->owner->health += (self->dmg/2);
 	}
 	else
 	{
@@ -381,6 +382,8 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	VectorCopy (start, bolt->s.origin);
 	VectorCopy (start, bolt->s.old_origin);
 	vectoangles (dir, bolt->s.angles);
+	if(self->client->playerClass == 3)
+		damage *=20;
 	VectorScale (dir, speed, bolt->velocity);
 	bolt->movetype = MOVETYPE_FLYMISSILE;
 	bolt->clipmask = MASK_SHOT;
@@ -398,6 +401,8 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->classname = "bolt";
 	if(self->client->playerClass == 2)
 		bolt->touch = heal_blaster_touch;
+	if(self->client->playerClass == 3)
+		bolt->nextthink = level.time + .06;
 
 	if (hyper)
 		bolt->spawnflags = 1;

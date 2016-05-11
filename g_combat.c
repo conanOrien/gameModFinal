@@ -440,16 +440,16 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	}
 
 	// check for invincibility
-	if ((client && client->invincible_framenum > level.framenum ) && !(dflags & DAMAGE_NO_PROTECTION))
-	{
-		if (targ->pain_debounce_time < level.time)
-		{
-			gi.sound(targ, CHAN_ITEM, gi.soundindex("items/protect4.wav"), 1, ATTN_NORM, 0);
-			targ->pain_debounce_time = level.time + 2;
-		}
-		take = 0;
-		save = damage;
-	}
+//	if ((client && client->invincible_framenum > level.framenum ) && !(dflags & DAMAGE_NO_PROTECTION))
+//	{
+//		if (targ->pain_debounce_time < level.time)
+//		{
+//			gi.sound(targ, CHAN_ITEM, gi.soundindex("items/protect4.wav"), 1, ATTN_NORM, 0);
+//			targ->pain_debounce_time = level.time + 2;
+//		}
+//		take = 0;
+//		save = damage;
+//	}
 
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;

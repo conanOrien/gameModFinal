@@ -2107,7 +2107,7 @@ tank commander's head
 */
 void SP_item_health (edict_t *self)
 {
-	if ( deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH) )
+	if ( !deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH) )
 	{
 		G_FreeEdict (self);
 		return;
