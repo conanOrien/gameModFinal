@@ -800,8 +800,10 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t	start;
 	vec3_t	offset;
 
-	if (is_quad)
+	if (is_quad && (ent->client->playerClass == 1 || ent->client->playerClass == 3))
 		damage *= 4;
+	if(is_quad && ent->client->playerClass == 2)
+		damage *= -4;
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
 	VectorSet(offset, 24, 8, ent->viewheight-8);
 	VectorAdd (offset, g_offset, offset);
@@ -966,7 +968,6 @@ void Machinegun_Fire (edict_t *ent)
 	if (is_quad)
 	{
 		damage *= 4;
-		kick *= 4;
 	}
 
 	for (i=1 ; i<3 ; i++)
@@ -1165,8 +1166,9 @@ void weapon_shotgun_fire (edict_t *ent)
 	vec3_t		start;
 	vec3_t		forward, right;
 	vec3_t		offset;
-	int			damage = 4;
+	int			damage = -4;
 	int			kick = 8;
+	int			quadMod = 0;
 
 	if (ent->client->ps.gunframe == 9)
 	{
@@ -1184,12 +1186,11 @@ void weapon_shotgun_fire (edict_t *ent)
 
 	if (is_quad)
 	{
-		damage *= 4;
-		kick *= 4;
+		quadMod = 1;
 	}
 
 	if (deathmatch->value)
-		fire_shotgun (ent, start, forward, damage, kick, 500, 500, DEFAULT_DEATHMATCH_SHOTGUN_COUNT, MOD_SHOTGUN);
+		fire_heal_rail(ent,start,forward,damage,kick,quadMod);
 	else
 		fire_shotgun (ent, start, forward, damage, kick, 500, 500, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
 
@@ -1202,8 +1203,8 @@ void weapon_shotgun_fire (edict_t *ent)
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index]--;
+//	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+//		ent->client->pers.inventory[ent->client->ammo_index]--;
 }
 
 void Weapon_Shotgun (edict_t *ent)

@@ -940,3 +940,109 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 
 	gi.linkentity (bfg);
 }
+
+/*
+=========================
+Heal Rail
+=========================
+*/
+void fire_heal_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int quadMod)
+{
+	vec3_t		from;
+	vec3_t		end;
+	vec3_t		point;
+	vec3_t		dir;
+	trace_t		tr;
+	trace_t		nr;
+	edict_t		*ignore;
+	int			mask;
+	qboolean	water;
+
+	VectorMA (start, 8192, aimdir, end);
+	VectorCopy (start, from);
+	ignore = self;
+	water = false;
+	mask = MASK_SHOT|CONTENTS_SLIME|CONTENTS_LAVA;
+	while (ignore)
+	{
+		tr = gi.trace (from, NULL, NULL, end, ignore, mask);
+
+		if (tr.contents & (CONTENTS_SLIME|CONTENTS_LAVA))
+		{
+			mask &= ~(CONTENTS_SLIME|CONTENTS_LAVA);
+			water = true;
+		}
+		else
+		{
+			//ZOID--added so rail goes through SOLID_BBOX entities (gibs, etc)
+			if ((tr.ent->svflags & SVF_MONSTER) || (tr.ent->client) ||
+				(tr.ent->solid == SOLID_BBOX))
+				ignore = tr.ent;
+			else
+			ignore = NULL;
+
+			if ((tr.ent != self) && (tr.ent->client))
+				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_RAILGUN);
+				ignore = NULL;
+		}
+
+		VectorCopy (tr.endpos, from);
+	}
+
+	// send gun puff / flash
+	gi.WriteByte (svc_temp_entity);
+	gi.WriteByte (TE_RAILTRAIL);
+	gi.WritePosition (start);
+	gi.WritePosition (tr.endpos);
+//	gi.multicast (self->s.origin, MULTICAST_PHS);
+//	gi.multicast (start, MULTICAST_PHS);
+	if (water)
+	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_RAILTRAIL);
+		gi.WritePosition (start);
+		gi.WritePosition (tr.endpos);
+		gi.multicast (tr.endpos, MULTICAST_PHS);
+	}
+
+	if (self->client)
+		PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+	if(quadMod)
+	{
+		edict_t *ent;
+		while ((ent = findradius(tr.ent, tr.ent->s.origin, 256)) != NULL)
+		{
+			if (ent == self)
+				continue;
+
+			if (ent == self->owner)
+				continue;
+
+			if (!ent->takedamage)
+				continue;
+
+			if (!(ent->svflags & SVF_MONSTER) && (!ent->client) && (strcmp(ent->classname, "misc_explobox") != 0))
+				continue;
+
+			VectorMA (ent->absmin, 0.5, ent->size, point);
+
+			VectorSubtract (point, self->s.origin, dir);
+			VectorNormalize (dir);
+
+			ignore = self;
+			VectorCopy (self->s.origin, start);
+			VectorMA (start, 2048, dir, end);
+			while(1)
+			{
+				nr = gi.trace (start, NULL, NULL, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
+
+				if (!tr.ent)
+					break;
+
+				// heal it if we can
+				if ((nr.ent->client) && (nr.ent != self->owner))
+					T_Damage (nr.ent, self, self->owner, dir, tr.endpos, vec3_origin, damage, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
+			}
+		}
+	}
+}
