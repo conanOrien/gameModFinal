@@ -5,6 +5,7 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 void SP_misc_teleporter_dest (edict_t *ent);
 int powerUpKey;
+int Invuln;
 
 //
 // Gross, ugly, disgustuing hack section
@@ -1831,6 +1832,10 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				}
 		}
 	}
+	if (client && client->invincible_framenum - level.framenum <= 0 )
+	{
+		Invuln = 0;
+	}
 }
 
 
@@ -1963,9 +1968,13 @@ void ClientBeginServerFrame (edict_t *ent)
 				ent->health += 1;
 			}
 		if(client->playerClass == 3)
-		{
-			
-		}
+			{
+				//set some variable to true,
+				//Check for var in weapon code
+				//change weapon effect
+				Invuln = 1;
+
+			}
 	}
 	if(powerUpKey == 2)
 	{

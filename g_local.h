@@ -445,6 +445,7 @@ extern	int	body_armor_index;
 
 extern int roundNum;
 extern int powerUpKey;
+extern int Invuln;
 
 // means of death
 #define MOD_UNKNOWN			0
