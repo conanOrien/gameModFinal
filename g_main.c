@@ -15,6 +15,7 @@ int roundNum;
 int monsterTime = 100;
 int roundStart;
 int numMonsters;
+int powerUpKey;
 
 edict_t		*g_edicts;
 
@@ -395,6 +396,8 @@ Advances the world by 0.1 seconds
 */
 void G_RunFrame (void)
 {
+//	gitem_t *it;
+//	edict_t *it_ent;
 	int		i;
 	edict_t	*ent;
 
@@ -417,15 +420,52 @@ void G_RunFrame (void)
 		{
 			monstSpawn();
 		}
+
+		//overheal debuff
+//		if(ent->client && ent->health > ent->max_health)
+//		{ent->health -= 1;}
+
 		if(roundNum == 1 && level.killed_monsters == level.total_monsters)
+		{
+/*			it = FindItem("Quad Damage");
+			it_ent = G_Spawn();
+			it_ent->classname = it->classname;
+			SpawnItem (it_ent, it);
+			Touch_Item (it_ent, ent, NULL, NULL);
+			if (it_ent->inuse){
+				G_FreeEdict(it_ent);}
+*/
+			//Print congrats
+			//notify of/advance to next round
+			//grant powerups
+			gi.bprintf(PRINT_HIGH, "Round 1 Complete.. Enjoy your powerups \nBeginning Round 2\n");
+			powerUpKey = 1;
+			roundNum ++;			
+		}
+		if(roundNum == 2 && level.killed_monsters == level.total_monsters)
 		{
 			//Print congrats
 			//notify of/advance to next round
 			//grant powerups
-			gi.bprintf(PRINT_HIGH, "Round 1 Complete.. Enjoy your powerups \nBeginning Round 2");
+			gi.bprintf(PRINT_HIGH, "Round 2 Complete.. Enjoy your powerups \nBeginning Round 3\n");
 			roundNum ++;
 		}
-	}
+		if(roundNum == 3 && level.killed_monsters == level.total_monsters)
+		{
+			//Print congrats
+			//notify of/advance to next round
+			//grant powerups
+			gi.bprintf(PRINT_HIGH, "Round 3 Complete.. Enjoy your powerups \nBeginning Final Round\n");
+			roundNum ++;
+		}
+		if(roundNum == 3 && level.killed_monsters == level.total_monsters)
+		{
+			//Print congrats
+			//notify of/advance to next round
+			//grant powerups
+			gi.bprintf(PRINT_HIGH, "Final Round Complete. Conglaturations! You've made Happy end!");
+		}
+}
 
 
 

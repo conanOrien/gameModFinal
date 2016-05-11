@@ -4,6 +4,7 @@
 void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 void SP_misc_teleporter_dest (edict_t *ent);
+int powerUpKey;
 
 //
 // Gross, ugly, disgustuing hack section
@@ -1846,6 +1847,9 @@ void ClientBeginServerFrame (edict_t *ent)
 {
 	gclient_t	*client;
 	int			buttonMask;
+	char		*pClass;
+	gitem_t		*it;
+	edict_t		*it_ent;
 
 	if (level.intermissiontime)
 		return;
@@ -1892,4 +1896,38 @@ void ClientBeginServerFrame (edict_t *ent)
 			PlayerTrail_Add (ent->s.old_origin);
 
 	client->latched_buttons = 0;
+
+	if(ent->client->playerClass == 1)
+	{
+		pClass = "Tank";
+	}
+	if(ent->client->playerClass == 2)
+	{
+		pClass = "Medic";
+	}
+	if(ent->client->playerClass == 3)
+	{
+		pClass = "DPS";
+	}
+	if(!ent->client->playerClass)
+	{
+		pClass = "None";
+	}
+	
+	if(roundNum && ent->client->showscores == true)
+	{
+		gi.bprintf(PRINT_HIGH, "\nCurrent Round:%i\nEnemies Left:%i\nClass:%s\n",roundNum, (level.total_monsters-level.killed_monsters), pClass);
+	}
+
+	if(powerUpKey>0)
+	{
+			it = FindItem("Quad Damage");
+			it_ent = G_Spawn();
+			it_ent->classname = it->classname;
+			SpawnItem (it_ent, it);
+			Touch_Item (it_ent, ent, NULL, NULL);
+			if (it_ent->inuse){
+			G_FreeEdict(it_ent);}
+			powerUpKey = 0;
+	}
 }

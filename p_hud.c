@@ -1,5 +1,6 @@
 #include "g_local.h"
 
+int roundNum;
 
 
 /*
@@ -269,7 +270,8 @@ void Cmd_Score_f (edict_t *ent)
 	}
 
 	ent->client->showscores = true;
-	DeathmatchScoreboard (ent);
+	
+//	DeathmatchScoreboard (ent);
 }
 
 
