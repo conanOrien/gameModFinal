@@ -711,6 +711,7 @@ void weapon_grenadelauncher_fire (edict_t *ent)
 	if(ent->client->playerClass == 3 && Invuln == 1)
 	{
 		radius *= 3;
+		damage += 100;
 	}
 	fire_grenade (ent, start, forward, damage, 600, 2.5, radius);
 
