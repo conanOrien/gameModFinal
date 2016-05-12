@@ -1604,8 +1604,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			client->ps.pmove.pm_type = PM_DEAD;
 		else
 			client->ps.pmove.pm_type = PM_NORMAL;
-
-		client->ps.pmove.gravity = sv_gravity->value;
+		if(client->p1 != 1)
+			client->ps.pmove.gravity = sv_gravity->value;
 		pm.s = client->ps.pmove;
 
 		for (i=0 ; i<3 ; i++)
@@ -1691,6 +1691,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 	}
 
+//	gi.bprintf(PRINT_HIGH,"X: %f\n Y:%f\n Z:%f\n", ent->s.origin[0],ent->s.origin[1],ent->s.origin[2]);
+
 	client->oldbuttons = client->buttons;
 	client->buttons = ucmd->buttons;
 	client->latched_buttons |= client->buttons & ~client->oldbuttons;
@@ -1738,6 +1740,11 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			UpdateChaseCam(other);
 	}
 
+/*
+===================================
+Class Selection/Modification - ow5
+===================================
+*/
 	if(client->pers.weapon == FindItem("Machinegun"))
 	{
 		//print a message
@@ -1801,7 +1808,6 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				}
 		}
 	}
-
 	if(client->pers.weapon == FindItem("Grenade Launcher"))
 	{
 		//print a message
@@ -1832,13 +1838,21 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				}
 		}
 	}
+
+	//Powerup Disablers
 	if (client && client->quad_framenum - level.framenum <= 0)
 		client->p1 = 0;
 	if (client && client->invincible_framenum - level.framenum <= 0 )
 		client->p2 = 0;
 	if (client && client->breather_framenum - level.framenum <= 0)
 		client->p3 = 0;
-
+	//Powerup Enablers
+	if (client && client->invincible_framenum - level.framenum > 0 )
+		client->p1 = 1;
+	if (client && client->quad_framenum - level.framenum > 0 )
+		client->p2 = 1;
+	if (client && client->breather_framenum - level.framenum > 0 )
+		client->p3 = 1;
 }
 
 
@@ -1906,30 +1920,32 @@ void ClientBeginServerFrame (edict_t *ent)
 
 	client->latched_buttons = 0;
 
-	if(ent->client->playerClass == 1)
+
+	//GUI printing Hoohah
+	switch(ent->client->playerClass)
 	{
-		pClass = "Tank";
+		case(1):
+			pClass = "Tank";
+			break;
+		case(2):
+			pClass = "Medic";
+			break;
+		case(3):
+			pClass = "DPS";
+			break;
+		case(NULL):
+			pClass = "None";
+			break;
 	}
-	if(ent->client->playerClass == 2)
-	{
-		pClass = "Medic";
-	}
-	if(ent->client->playerClass == 3)
-	{
-		pClass = "DPS";
-	}
-	if(!ent->client->playerClass)
-	{
-		pClass = "None";
-	}
-	
 	if(roundNum && ent->client->showscores == true)
 	{
 		gi.bprintf(PRINT_HIGH, "\nCurrent Round:%i\nEnemies Left:%i\nClass:%s\n",roundNum, (level.total_monsters-level.killed_monsters), pClass);
 	}
 
-	if(powerUpKey==1)
+	//Grants powerups between rounds
+	switch(powerUpKey)
 	{
+		case(1):
 			//it = FindItem("Quad Damage");
 			it = FindItem("Invulnerability");
 			it_ent = G_Spawn();
@@ -1939,89 +1955,54 @@ void ClientBeginServerFrame (edict_t *ent)
 			if (it_ent->inuse){
 			G_FreeEdict(it_ent);}
 			powerUpKey = 0;
-	}
-	if(powerUpKey == 2)
-	{
-		it = FindItem("Quad Damage");
-		it_ent = G_Spawn();
-		it_ent->classname = it->classname;
-		SpawnItem (it_ent, it);
-		Touch_Item (it_ent, ent, NULL, NULL);
-		if (it_ent->inuse){
-			G_FreeEdict(it_ent);}
-		powerUpKey = 0;
-	}
-	if(powerUpKey == 3)
-	{
-		it = FindItem("Rebreather");
-		it_ent = G_Spawn();
-		it_ent->classname = it->classname;
-		SpawnItem (it_ent, it);
-		Touch_Item (it_ent, ent, NULL, NULL);
-		if (it_ent->inuse){
-			G_FreeEdict(it_ent);}
-		powerUpKey = 0;
+			break;
+		case(2):
+			it = FindItem("Quad Damage");
+			it_ent = G_Spawn();
+			it_ent->classname = it->classname;
+			SpawnItem (it_ent, it);
+			Touch_Item (it_ent, ent, NULL, NULL);
+			if (it_ent->inuse)
+				G_FreeEdict(it_ent);
+			powerUpKey = 0;
+			break;
+		case(3):
+			it = FindItem("Rebreather");
+			it_ent = G_Spawn();
+			it_ent->classname = it->classname;
+			SpawnItem (it_ent, it);
+			Touch_Item (it_ent, ent, NULL, NULL);
+			if (it_ent->inuse)
+				G_FreeEdict(it_ent);
+			powerUpKey = 0;
+			break;
 	}
 
-	if (client && client->invincible_framenum - level.framenum > 0 )
+	//Powerup effects
+	if (client->p1 == 1) //Invincibility powerup
 	{
-		if(client->playerClass == 1)
+		switch(client->playerClass)
 		{
-			//item = FindItem("Bullets");
-			/*if (item)
-			{
-				index = ITEM_INDEX(item);
-				if (ent->client->pers.inventory[index] > ent->client->pers.max_bullets)
-				{
-					ent->client->pers.inventory[index] = ent->client->pers.max_bullets;
-
-				}
-				else
-				{*/
-					it = FindItem("Bullets");
-					it_ent = G_Spawn();
-					it_ent->classname = it->classname;
-					SpawnItem (it_ent, it);
-					Touch_Item (it_ent, ent, NULL, NULL);
-					if (it_ent->inuse){
-					G_FreeEdict(it_ent);}
-			//	}
-			}
-			
-	
-		if(client->playerClass == 2 && ent->health < ent->client->pers.max_health )
-			{
-				ent->health += 1;
-			}
-		if(client->playerClass == 3)
-			{
-				//set some variable to true,
-				//Check for var in weapon code
-				//change weapon effect
-				client->p2 = 1;
-
-			}
-	}
-	if (client && client->breather_framenum - level.framenum > 0 )
-	{
-		if(client->playerClass == 1)
-		{
-			client->p3 = 1;
+			case(1):	//Tank - Ammo Regen
+				it = FindItem("Bullets");
+				it_ent = G_Spawn();
+				it_ent->classname = it->classname;
+				SpawnItem (it_ent, it);
+				Touch_Item (it_ent, ent, NULL, NULL);
+				if (it_ent->inuse){
+				G_FreeEdict(it_ent);}
+				break;
+			case(2):	//Medic - HP regen
+				if(ent->health < ent->client->pers.max_health )
+					ent->health += 1;
+				break;
+			case(3):	//DPS - LowGrav
+				ent->client->ps.pmove.gravity = 400;
+				break;
 		}
-			
-	
-		if(client->playerClass == 2 && ent->health < ent->client->pers.max_health )
-			{
-				client->p3 = 1;
-			}
-		if(client->playerClass == 3)
-			{
-				//set some variable to true,
-				//Check for var in weapon code
-				//change weapon effect
-				client->p3 == 1;
 
-			}
+	
+		//PlayerClass3: g_weapon.c line 450, 
 	}
 
 }

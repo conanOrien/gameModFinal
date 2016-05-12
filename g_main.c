@@ -13,7 +13,8 @@ int meansOfDeath;
 int roundNum;
 
 int monsterTime = 100;
-int roundStart;
+int hold;
+int roundStart = 0;
 int numMonsters;
 int powerUpKey;
 
@@ -98,6 +99,7 @@ void SP_monster_boss3_stand (edict_t *self);
 void SelectSpawnPoint (edict_t *ent, vec3_t origin, vec3_t angles);
 void walkmonster_start_go (edict_t *self);
 void monstSpawn();
+void HuntTarget (edict_t *self);
 
 //===================================================================
 
@@ -412,38 +414,28 @@ void G_RunFrame (void)
 	{	
 //		gi.bprintf(PRINT_HIGH, "Round %i\n", roundNum);
 
-		if(roundNum == 0 && monsterTime > 0)
+		if(monsterTime > 0)
 		{
 			monsterTime --;
 		}		
-		if(roundNum == 0 && monsterTime == 0)
+		if(monsterTime == 0 && hold != 1 )
 		{
 			monstSpawn();
 		}
 
-		//overheal debuff
-//		if(ent->client && ent->health > ent->max_health)
-//		{ent->health -= 1;}
-
-		if(roundNum == 1 && level.killed_monsters == level.total_monsters)
+		//Round Control logic ow5
+		if(roundNum == 1 && (level.killed_monsters == level.total_monsters))
 		{
-/*			it = FindItem("Quad Damage");
-			it_ent = G_Spawn();
-			it_ent->classname = it->classname;
-			SpawnItem (it_ent, it);
-			Touch_Item (it_ent, ent, NULL, NULL);
-			if (it_ent->inuse){
-				G_FreeEdict(it_ent);}
-*/
 			//Print congrats
 			//notify of/advance to next round
 			//grant powerups
 			gi.bprintf(PRINT_HIGH, "Round 1 Complete.. Enjoy your powerups \nBeginning Round 2\n");
 			powerUpKey = 1;
 			roundNum ++;
+			hold = 0;
 			monstSpawn();
 		}
-		if(roundNum == 2 && level.killed_monsters == level.total_monsters)
+		if(roundNum == 2 && (level.killed_monsters == level.total_monsters))
 		{
 			//Print congrats
 			//notify of/advance to next round
@@ -451,9 +443,10 @@ void G_RunFrame (void)
 			gi.bprintf(PRINT_HIGH, "Round 2 Complete.. Enjoy your powerups \nBeginning Round 3\n");
 			powerUpKey = 2;
 			roundNum ++;
+			hold = 0;
 			monstSpawn();
 		}
-		if(roundNum == 3 && level.killed_monsters == level.total_monsters)
+		if(roundNum == 3 && (level.killed_monsters == level.total_monsters))
 		{
 			//Print congrats
 			//notify of/advance to next round
@@ -461,9 +454,10 @@ void G_RunFrame (void)
 			gi.bprintf(PRINT_HIGH, "Round 3 Complete.. Enjoy your powerups \nBeginning Final Round\n");
 			roundNum ++;
 			powerUpKey = 3;
+			hold = 0;
 			monstSpawn();
 		}
-		if(roundNum == 4 && level.killed_monsters == level.total_monsters)
+		if(roundNum == 4 && (level.killed_monsters == level.total_monsters))
 		{
 			//Print congrats
 			//notify of/advance to next round
@@ -529,7 +523,11 @@ void G_RunFrame (void)
 void monstSpawn()
 {
 	int dice;
-	roundStart = 0;
+	if(level.total_monsters == 10 ||level.total_monsters == 20 || level.total_monsters == 30|| level.total_monsters == 40)
+		{
+			roundStart = 0;
+			hold = 1;
+		}
 	
 	if(roundNum == 0)
 	{
@@ -546,7 +544,7 @@ void monstSpawn()
 			gi.bprintf(PRINT_HIGH, "Round 1 - Total Monsters: 10");
 			roundStart ++;
 		}
-		while((level.total_monsters-level.killed_monsters) < numMonsters)
+		while(((level.total_monsters-level.killed_monsters) < numMonsters) && monsterTime == 0)
 		{
 			dice = (rand() % 4+1-1)+1;
 			if(dice == 1)
@@ -557,9 +555,10 @@ void monstSpawn()
 				
 				SelectSpawnPoint (monster, origin, angles);
 				monster->classname = "monster_soldier";
+				monster->think = HuntTarget;
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_soldier(monster);
-				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 3)
 			{
@@ -569,9 +568,10 @@ void monstSpawn()
 				
 				SelectSpawnPoint (monster, origin, angles);
 				monster->classname = "monster_berserk";
+				monster->think = walkmonster_start_go;
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_berserk(monster);
-				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 2)
 			{
@@ -581,9 +581,10 @@ void monstSpawn()
 				
 				SelectSpawnPoint (monster, origin, angles);
 				monster->classname = "monster_soldier_light";
+				monster->think = walkmonster_start_go;
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_soldier_light(monster);
-				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 4)
 			{
@@ -593,9 +594,10 @@ void monstSpawn()
 				
 				SelectSpawnPoint (monster, origin, angles);
 				monster->classname = "monster_soldier_ss";
+				monster->think = walkmonster_start_go;
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_soldier_ss(monster);
-				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 		}
 	}
@@ -607,7 +609,7 @@ void monstSpawn()
 			gi.bprintf(PRINT_HIGH, "Round 2 - Total Monsters: 10");
 			roundStart ++;
 		}
-		while((level.total_monsters-level.killed_monsters) < numMonsters)
+		while((level.total_monsters-level.killed_monsters) < numMonsters && monsterTime == 0)
 		{
 			dice = (rand() % 4+1-1)+1;
 			if(dice == 1)
@@ -621,6 +623,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_parasite(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 3)
 			{
@@ -633,6 +636,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_berserk(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 2)
 			{
@@ -645,6 +649,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_mutant(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 4)
 			{
@@ -657,6 +662,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_soldier_ss(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 		}
 	}
@@ -668,7 +674,7 @@ void monstSpawn()
 			gi.bprintf(PRINT_HIGH, "Round 3 - Total Monsters: 10");
 			roundStart ++;
 		}
-		while((level.total_monsters-level.killed_monsters) < numMonsters)
+		while((level.total_monsters-level.killed_monsters) < numMonsters && monsterTime == 0)
 		{
 			dice = (rand() % 4+1-1)+1;
 			if(dice == 1)
@@ -682,6 +688,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_parasite(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 3)
 			{
@@ -694,6 +701,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_gunner(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 2)
 			{
@@ -706,6 +714,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_mutant(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 			if(dice == 4)
 			{
@@ -718,6 +727,7 @@ void monstSpawn()
 				VectorCopy(origin,monster->s.origin);
 				SP_monster_infantry(monster);
 				walkmonster_start_go(monster);
+				monsterTime = 10;
 			}
 		}
 	}

@@ -203,7 +203,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 		{
 			if (tr.ent->takedamage)
 			{
-				gi.bprintf(PRINT_HIGH, "%i", tr.ent->health);
+				//ow5: tank last hit kill powerup p3
 				if(tr.ent->health <= DAMAGE_BULLET && self->client->p3 == 1 && self->client->playerClass == 1)
 				{
 					fire_grenade(self,tr.endpos,aimdir,1000,0,0,100);
@@ -447,9 +447,9 @@ static void Grenade_Explode (edict_t *ent)
 		vec3_t	v;
 		vec3_t	dir;
 
-		if(ent->owner->client->playerClass == 3 && ent->owner->client->p2)
+		if(ent->owner->client->playerClass == 3 && ent->owner->client->p3)
 		{
-			points += 5;
+			points += 40;
 		}
 
 		VectorAdd (ent->enemy->mins, ent->enemy->maxs, v);

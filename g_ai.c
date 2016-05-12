@@ -472,13 +472,15 @@ qboolean FindTarget (edict_t *self)
 		r = range (self, client);
 
 		if (r == RANGE_FAR)
-			return false;
+			return true;
+			//return false; ow5
 
 // this is where we would check invisibility
 
 		// is client in an spot too dark to be seen?
 		if (client->light_level <= 5)
-			return false;
+			return true;
+		//	return false; ow5
 
 		if (!visible (self, client))
 		{
@@ -489,14 +491,16 @@ qboolean FindTarget (edict_t *self)
 		{
 			if (client->show_hostile < level.time && !infront (self, client))
 			{
-				return false;
+				//return false; ow5
+				return true;
 			}
 		}
 		else if (r == RANGE_MID)
 		{
 			if (!infront (self, client))
 			{
-				return false;
+				//return false; ow5
+				return true;
 			}
 		}
 
@@ -512,7 +516,8 @@ qboolean FindTarget (edict_t *self)
 				if (!self->enemy->client)
 				{
 					self->enemy = NULL;
-					return false;
+					return true;
+					//return false; ow5
 				}
 			}
 		}
@@ -536,7 +541,8 @@ qboolean FindTarget (edict_t *self)
 
 		if (VectorLength(temp) > 1000)	// too far to hear
 		{
-			return false;
+			return true;
+			//return false; ow5
 		}
 
 		// check area portals - if they are different and not connected then we can't hear it
