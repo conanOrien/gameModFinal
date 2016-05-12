@@ -7,9 +7,6 @@
 static qboolean	is_quad;
 static byte		is_silenced;
 
-int Invuln;
-
-
 void weapon_grenade_fire (edict_t *ent, qboolean held);
 
 
@@ -708,7 +705,7 @@ void weapon_grenadelauncher_fire (edict_t *ent)
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	if(ent->client->playerClass == 3 && Invuln == 1)
+	if(ent->client->playerClass == 3 && ent->client->p2 == 1)
 	{
 		radius *=1.5;
 		damage *=3;

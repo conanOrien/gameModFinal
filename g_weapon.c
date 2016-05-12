@@ -203,10 +203,14 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 		{
 			if (tr.ent->takedamage)
 			{
-				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, mod);
-				if(tr.ent->health <= 10 && Invuln == 1)
+				gi.bprintf(PRINT_HIGH, "%i", tr.ent->health);
+				if(tr.ent->health <= DAMAGE_BULLET && self->client->p3 == 1 && self->client->playerClass == 1)
 				{
-					//Grenade_Explode(tr.ent->);
+					fire_grenade(self,tr.endpos,aimdir,1000,0,0,100);
+				}
+				else
+				{	
+					T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, mod);
 				}
 			}
 			else
@@ -442,6 +446,11 @@ static void Grenade_Explode (edict_t *ent)
 		float	points;
 		vec3_t	v;
 		vec3_t	dir;
+
+		if(ent->owner->client->playerClass == 3 && ent->owner->client->p2)
+		{
+			points += 5;
+		}
 
 		VectorAdd (ent->enemy->mins, ent->enemy->maxs, v);
 		VectorMA (ent->enemy->s.origin, 0.5, v, v);
@@ -995,7 +1004,7 @@ void fire_heal_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int
 
 			if ((tr.ent != self) && (tr.ent->client))
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_RAILGUN);
-				if(Invuln == 1)
+				if(self->client->p3 == 1)
 				{
 					if(tr.ent->client->playerClass == 1)
 					{

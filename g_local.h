@@ -445,7 +445,6 @@ extern	int	body_armor_index;
 
 extern int roundNum;
 extern int powerUpKey;
-extern int Invuln;
 
 // means of death
 #define MOD_UNKNOWN			0
@@ -944,14 +943,14 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
-
 	int			playerClass;
 	int			healthMod;			// added to players, changes depending on weapon held
 	int			armorMod;			// This implements the class system
 	int			ammoMod;
 	int			powerUpKey;
-	int			Invuln;
-
+	int			p1;					// powerup switches
+	int			p2;
+	int			p3;
 };
 
 

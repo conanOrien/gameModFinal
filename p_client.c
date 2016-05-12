@@ -1832,10 +1832,13 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				}
 		}
 	}
+	if (client && client->quad_framenum - level.framenum <= 0)
+		client->p1 = 0;
 	if (client && client->invincible_framenum - level.framenum <= 0 )
-	{
-		Invuln = 0;
-	}
+		client->p2 = 0;
+	if (client && client->breather_framenum - level.framenum <= 0)
+		client->p3 = 0;
+
 }
 
 
@@ -1995,7 +1998,7 @@ void ClientBeginServerFrame (edict_t *ent)
 				//set some variable to true,
 				//Check for var in weapon code
 				//change weapon effect
-				Invuln = 1;
+				client->p2 = 1;
 
 			}
 	}
@@ -2003,32 +2006,20 @@ void ClientBeginServerFrame (edict_t *ent)
 	{
 		if(client->playerClass == 1)
 		{
-			//item = FindItem("Bullets");
-			/*if (item)
-			{
-				index = ITEM_INDEX(item);
-				if (ent->client->pers.inventory[index] > ent->client->pers.max_bullets)
-				{
-					ent->client->pers.inventory[index] = ent->client->pers.max_bullets;
-
-				}
-				else
-				{*/
-			Invuln = 1;
-			//	}
+			client->p3 = 1;
 		}
 			
 	
 		if(client->playerClass == 2 && ent->health < ent->client->pers.max_health )
 			{
-				Invuln = 1;
+				client->p3 = 1;
 			}
 		if(client->playerClass == 3)
 			{
 				//set some variable to true,
 				//Check for var in weapon code
 				//change weapon effect
-				ent->speed *= 5;
+				client->p3 == 1;
 
 			}
 	}
