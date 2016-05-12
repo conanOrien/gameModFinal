@@ -945,10 +945,13 @@ struct gclient_s
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
 
-	int			playerClass;		// number between 1 and 3; 1 is tank, 2 is medic, 3 is DPS. Set in weaponcode
+	int			playerClass;
 	int			healthMod;			// added to players, changes depending on weapon held
 	int			armorMod;			// This implements the class system
 	int			ammoMod;
+	int			powerUpKey;
+	int			Invuln;
+
 };
 
 

@@ -1,5 +1,5 @@
 #include "g_local.h"
-
+extern int playerClass;
 
 /*
 =================
