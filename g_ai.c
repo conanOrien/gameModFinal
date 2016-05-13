@@ -6,6 +6,7 @@ qboolean FindTarget (edict_t *self);
 extern cvar_t	*maxclients;
 
 qboolean ai_checkattack (edict_t *self, float dist);
+edict_t	FindNearestPlayer (edict_t *spot);
 
 qboolean	enemy_vis;
 qboolean	enemy_infront;
@@ -119,7 +120,7 @@ void ai_stand (edict_t *self, float dist)
 		return;
 	}
 
-	if (!(self->spawnflags & 1) && (self->monsterinfo.idle) && (level.time > self->monsterinfo.idle_time))
+/*	if (!(self->spawnflags & 1) && (self->monsterinfo.idle) && (level.time > self->monsterinfo.idle_time))
 	{
 		if (self->monsterinfo.idle_time)
 		{
@@ -130,7 +131,7 @@ void ai_stand (edict_t *self, float dist)
 		{
 			self->monsterinfo.idle_time = level.time + random() * 15;
 		}
-	}
+	}*/
 }
 
 
@@ -255,7 +256,7 @@ int range (edict_t *self, edict_t *other)
 		return RANGE_NEAR;
 	if (len < 1000)
 		return RANGE_MID;
-	return RANGE_FAR;
+	return RANGE_MID;
 }
 
 /*
@@ -279,7 +280,8 @@ qboolean visible (edict_t *self, edict_t *other)
 	
 	if (trace.fraction == 1.0)
 		return true;
-	return false;
+	return true;
+	//return false; ow5
 }
 
 
@@ -478,31 +480,30 @@ qboolean FindTarget (edict_t *self)
 // this is where we would check invisibility
 
 		// is client in an spot too dark to be seen?
+		/* ow5
 		if (client->light_level <= 5)
-			return true;
-		//	return false; ow5
-
+			return false;
+		
 		if (!visible (self, client))
 		{
 			return false;
 		}
-
+		
 		if (r == RANGE_NEAR)
 		{
 			if (client->show_hostile < level.time && !infront (self, client))
 			{
-				//return false; ow5
-				return true;
+				return false;
 			}
 		}
+		
 		else if (r == RANGE_MID)
 		{
 			if (!infront (self, client))
 			{
-				//return false; ow5
-				return true;
+				return false;
 			}
-		}
+		}*/
 
 		self->enemy = client;
 
@@ -524,6 +525,7 @@ qboolean FindTarget (edict_t *self)
 	}
 	else	// heardit
 	{
+
 		vec3_t	temp;
 
 		if (self->spawnflags & 1)
@@ -538,12 +540,12 @@ qboolean FindTarget (edict_t *self)
 		}
 
 		VectorSubtract (client->s.origin, self->s.origin, temp);
-
+		/*
 		if (VectorLength(temp) > 1000)	// too far to hear
 		{
-			return true;
-			//return false; ow5
-		}
+			
+			return false;
+		}*/
 
 		// check area portals - if they are different and not connected then we can't hear it
 		if (client->areanum != self->areanum)
@@ -568,7 +570,6 @@ qboolean FindTarget (edict_t *self)
 
 	return true;
 }
-
 
 //=============================================================================
 

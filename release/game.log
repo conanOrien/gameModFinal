@@ -1,4 +1,4 @@
-﻿Build started 5/12/2016 3:32:35 AM.
+﻿Build started 5/13/2016 3:10:58 AM.
      1>Project "D:\College Work\IT266\QUAKE2\game.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating ".\release\game.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -67,4 +67,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.32
+Time Elapsed 00:00:00.38

@@ -13,13 +13,16 @@ int meansOfDeath;
 int roundNum;
 
 int monsterTime = 100;
-int hold;
+int hold = 0;
 int roundStart = 0;
+int gameOver = 0;
 int numMonsters;
 int powerUpKey;
 
 edict_t		*g_edicts;
-
+edict_t *monster;
+vec3_t origin,angles;
+ 
 cvar_t	*deathmatch;
 cvar_t	*coop;
 cvar_t	*dmflags;
@@ -424,51 +427,55 @@ void G_RunFrame (void)
 		}
 
 		//Round Control logic ow5
-		if(roundNum == 1 && (level.killed_monsters == level.total_monsters))
+		while(level.killed_monsters >= 1 && level.killed_monsters == level.total_monsters && gameOver != 1)
 		{
-			//Print congrats
-			//notify of/advance to next round
-			//grant powerups
-			gi.bprintf(PRINT_HIGH, "Round 1 Complete.. Enjoy your powerups \nBeginning Round 2\n");
-			powerUpKey = 1;
-			roundNum ++;
-			hold = 0;
-			monstSpawn();
-		}
-		if(roundNum == 2 && (level.killed_monsters == level.total_monsters))
-		{
-			//Print congrats
-			//notify of/advance to next round
-			//grant powerups
-			gi.bprintf(PRINT_HIGH, "Round 2 Complete.. Enjoy your powerups \nBeginning Round 3\n");
-			powerUpKey = 2;
-			roundNum ++;
-			hold = 0;
-			monstSpawn();
-		}
-		if(roundNum == 3 && (level.killed_monsters == level.total_monsters))
-		{
-			//Print congrats
-			//notify of/advance to next round
-			//grant powerups
-			gi.bprintf(PRINT_HIGH, "Round 3 Complete.. Enjoy your powerups \nBeginning Final Round\n");
-			roundNum ++;
-			powerUpKey = 3;
-			hold = 0;
-			monstSpawn();
-		}
-		if(roundNum == 4 && (level.killed_monsters == level.total_monsters))
-		{
-			//Print congrats
-			//notify of/advance to next round
-			//grant powerups
-			gi.bprintf(PRINT_HIGH, "Final Round Complete. Conglaturations! You've made Happy end!");
-		}
-}
-
-
-
+			switch(roundNum)
+			{
+				case(1):
+					//Print congrats
+					//notify of/advance to next round
+					//grant powerups
+					gi.bprintf(PRINT_HIGH, "Round 1 Complete.. Enjoy your powerups \nBeginning Round 2\n");
+					powerUpKey = 1;
+					monstSpawn();
+					roundNum ++;
+					hold = 0;
+					break;
+				case(2):
 		
+					//Print congrats
+					//notify of/advance to next round
+					//grant powerups
+					gi.bprintf(PRINT_HIGH, "Round 2 Complete.. Enjoy your powerups \nBeginning Round 3\n");
+					powerUpKey = 2;
+					monstSpawn();
+					roundNum ++;
+					hold = 0;
+					break;
+				case(3):
+					//Print congrats
+					//notify of/advance to next round
+					//grant powerups
+					gi.bprintf(PRINT_HIGH, "Round 3 Complete.. Enjoy your powerups \nBeginning Final Round\n");
+					monstSpawn();
+					roundNum ++;
+					powerUpKey = 3;
+					hold = 0;
+					break;
+				case(4):
+					//Print congrats
+					//notify of/advance to next round
+					//grant powerups
+					gi.bprintf(PRINT_HIGH, "\nFinal Round Complete. Conglaturations! You've made Happy end!\n");
+					gameOver = 1;
+
+			}
+		}
+	}
+	
+	if(gameOver == 1)
+		gi.bprintf(PRINT_HIGH, "Final Round Complete. Conglaturations! You've made Happy end!");
+	
 	// exit intermissions
 
 	if (level.exitintermission)
@@ -528,269 +535,224 @@ void monstSpawn()
 			roundStart = 0;
 			hold = 1;
 		}
-	
-	if(roundNum == 0)
+	switch(roundNum)
 	{
-		roundNum = 1;
-	}
-	if(roundNum == 1)
-	{
-		//spawn number of monsters for first round
-		//have a random number gen pick the monster that is spawned, 4 possible options so a 1-4 rand
-		//when monsters are dead, increment numRound
-		if(roundStart == 0)
-		{
-			numMonsters = 10;
-			gi.bprintf(PRINT_HIGH, "Round 1 - Total Monsters: 10");
-			roundStart ++;
+		case(0):
+			roundNum = 1;
+		case(1):
+			//spawn number of monsters for first round
+			//have a random number gen pick the monster that is spawned, 4 possible options so a 1-4 rand
+			//when monsters are dead, increment numRound
+			if(roundStart == 0)
+			{
+				numMonsters = 10;
+				gi.bprintf(PRINT_HIGH, "\nRound %i - Total Monsters: 10\n", roundNum);
+				roundStart ++;
+			}
+			while(((level.total_monsters-level.killed_monsters) < numMonsters) && monsterTime == 0)
+			{
+				dice = (rand() % 4+1-1)+1;
+				switch(dice)
+				{
+				case(1):
+					monster = G_Spawn();
+				
+					SelectSpawnPoint (monster, origin, angles);
+					monster->classname = "monster_soldier";
+					VectorCopy(origin,monster->s.origin);
+					SP_monster_soldier(monster);
+					monsterTime = 10;
+					break;
+				case(2):
+					monster = G_Spawn();
+				
+					SelectSpawnPoint (monster, origin, angles);
+					monster->classname = "monster_berserk";
+					VectorCopy(origin,monster->s.origin);
+					SP_monster_berserk(monster);
+					monsterTime = 10;
+					break;
+				case(3):
+					monster = G_Spawn();
+				
+					SelectSpawnPoint (monster, origin, angles);
+					monster->classname = "monster_soldier_light";
+					VectorCopy(origin,monster->s.origin);
+					SP_monster_soldier_light(monster);
+					monsterTime = 10;
+					break;
+				case(4):					 
+					monster = G_Spawn();
+					
+					SelectSpawnPoint (monster, origin, angles);
+					monster->classname = "monster_soldier_ss";
+					VectorCopy(origin,monster->s.origin);
+					SP_monster_soldier_ss(monster);
+					monsterTime = 10;
+					break;
+				}
+			}
+			break;
+			case(2):
+				while(((level.total_monsters-level.killed_monsters) < numMonsters) && monsterTime == 0)
+				{
+					dice = (rand() % 4+1-1)+1;
+					switch(dice)
+					{
+					case(1):
+						 
+						 
+						monster = G_Spawn();
+					
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_soldier";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_soldier(monster);
+						monsterTime = 10;
+						break;
+					case(2):
+						 
+						 
+						monster = G_Spawn();
+					
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_berserk";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_berserk(monster);
+						monsterTime = 10;
+						break;
+					case(3):
+						 
+						 
+						monster = G_Spawn();
+				
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_parasite";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_parasite(monster);
+						monsterTime = 10;
+						break;
+					case(4):
+						 
+						 
+						monster = G_Spawn();
+						
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_mutant";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_mutant(monster);
+						monsterTime = 10;
+						break;
+					}
+				}
+				break;
+			case(3):
+				while(((level.total_monsters-level.killed_monsters) < numMonsters) && monsterTime == 0)
+				{
+					dice = (rand() % 4+1-1)+1;
+					switch(dice)
+					{
+					case(1):
+						 
+						 
+						monster = G_Spawn();
+					
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_mutant";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_mutant(monster);
+						monsterTime = 10;
+						break;
+					case(2):
+						 
+						 
+						monster = G_Spawn();
+					
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_gunner";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_gunner(monster);
+						monsterTime = 10;
+						break;
+					case(3):
+						 
+						 
+						monster = G_Spawn();
+				
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_parasite";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_parasite(monster);
+						monsterTime = 10;
+						break;
+					case(4):
+						 
+						 
+						monster = G_Spawn();
+						
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_infantry";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_gladiator(monster);
+						monsterTime = 10;
+						break;
+					}
+				}
+				break;
+			case(4):
+				while(((level.total_monsters-level.killed_monsters) < numMonsters) && monsterTime == 0)
+				{
+					dice = (rand() % 4+1-1)+1;
+					switch(dice)
+					{
+					case(1):
+						 
+						 
+						monster = G_Spawn();
+					
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_gunner";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_gunner(monster);
+						monsterTime = 10;
+						break;
+					case(2):
+						 
+						 
+						monster = G_Spawn();
+					
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_mutant";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_mutant(monster);
+						monsterTime = 10;
+						break;
+					case(3):
+						 
+						 
+						monster = G_Spawn();
+				
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_gladiator";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_gladiator(monster);
+						monsterTime = 10;
+						break;
+					case(4):
+						 
+						 
+						monster = G_Spawn();
+						
+						SelectSpawnPoint (monster, origin, angles);
+						monster->classname = "monster_parasite";
+						VectorCopy(origin,monster->s.origin);
+						SP_monster_parasite(monster);
+						monsterTime = 10;
+						break;
+					}
+				}
+				break;
 		}
-		while(((level.total_monsters-level.killed_monsters) < numMonsters) && monsterTime == 0)
-		{
-			dice = (rand() % 4+1-1)+1;
-			if(dice == 1)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_soldier";
-				monster->think = HuntTarget;
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_soldier(monster);
-				monsterTime = 10;
-			}
-			if(dice == 3)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_berserk";
-				monster->think = walkmonster_start_go;
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_berserk(monster);
-				monsterTime = 10;
-			}
-			if(dice == 2)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_soldier_light";
-				monster->think = walkmonster_start_go;
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_soldier_light(monster);
-				monsterTime = 10;
-			}
-			if(dice == 4)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_soldier_ss";
-				monster->think = walkmonster_start_go;
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_soldier_ss(monster);
-				monsterTime = 10;
-			}
-		}
-	}
-	if(roundNum == 2)
-	{
-		if(roundStart == 0)
-		{
-			numMonsters = 10;
-			gi.bprintf(PRINT_HIGH, "Round 2 - Total Monsters: 10");
-			roundStart ++;
-		}
-		while((level.total_monsters-level.killed_monsters) < numMonsters && monsterTime == 0)
-		{
-			dice = (rand() % 4+1-1)+1;
-			if(dice == 1)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_parasite";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_parasite(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-			if(dice == 3)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_berserk";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_berserk(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-			if(dice == 2)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_mutant";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_mutant(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-			if(dice == 4)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_soldier_ss";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_soldier_ss(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-		}
-	}
-	if(roundNum == 3)
-	{
-		if(roundStart == 0)
-		{
-			numMonsters = 10;
-			gi.bprintf(PRINT_HIGH, "Round 3 - Total Monsters: 10");
-			roundStart ++;
-		}
-		while((level.total_monsters-level.killed_monsters) < numMonsters && monsterTime == 0)
-		{
-			dice = (rand() % 4+1-1)+1;
-			if(dice == 1)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_parasite";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_parasite(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-			if(dice == 3)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_gunner";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_gunner(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-			if(dice == 2)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_mutant";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_mutant(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-			if(dice == 4)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_infantry";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_infantry(monster);
-				walkmonster_start_go(monster);
-				monsterTime = 10;
-			}
-		}
-	}
-	if(roundNum == 4)
-	{
-		if(roundStart == 0)
-		{
-			numMonsters = 10;
-			gi.bprintf(PRINT_HIGH, "Round 4 - Total Monsters: 10");
-			roundStart ++;
-		}
-		while((level.total_monsters-level.killed_monsters) < numMonsters)
-		{
-			dice = (rand() % 4+1-1)+1;
-			if(dice == 1)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_gladiator";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_gladiator(monster);
-				walkmonster_start_go(monster);
-			}
-			if(dice == 3)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_boss2";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_boss2(monster);
-				walkmonster_start_go(monster);
-			}
-			if(dice == 2)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_parasite";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_parasite(monster);
-				walkmonster_start_go(monster);
-			}
-			if(dice == 4)
-			{
-				edict_t *monster;
-				vec3_t origin,angles;
-				monster = G_Spawn();
-				
-				SelectSpawnPoint (monster, origin, angles);
-				monster->classname = "monster_mutant";
-				VectorCopy(origin,monster->s.origin);
-				SP_monster_mutant(monster);
-				walkmonster_start_go(monster);
-			}
-		}
-	}
+
 }
 

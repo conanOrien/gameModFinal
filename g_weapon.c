@@ -204,9 +204,12 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 			if (tr.ent->takedamage)
 			{
 				//ow5: tank last hit kill powerup p3
-				if(tr.ent->health <= DAMAGE_BULLET && self->client->p3 == 1 && self->client->playerClass == 1)
+				if(tr.ent->health <= DAMAGE_BULLET && self->client)
 				{
-					fire_grenade(self,tr.endpos,aimdir,1000,0,0,100);
+					if(self->client->p3 == 1 && self->client->playerClass == 1)
+						fire_grenade(self,tr.endpos,aimdir,1000,0,0,100);
+					else
+						T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, mod);
 				}
 				else
 				{	

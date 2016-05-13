@@ -4,7 +4,10 @@
 void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 void		SP_misc_teleporter_dest (edict_t *ent);
-
+char		*pClass;
+gitem_t		*it;
+gitem_t		*item;
+edict_t		*it_ent;
 
 
 //
@@ -1853,74 +1856,8 @@ Class Selection/Modification - ow5
 		client->p2 = 1;
 	if (client && client->breather_framenum - level.framenum > 0 )
 		client->p3 = 1;
-}
 
-
-/*
-==============
-ClientBeginServerFrame
-
-This will be called once for each server frame, before running
-any other entities in the world.
-==============
-*/
-void ClientBeginServerFrame (edict_t *ent)
-{
-	gclient_t	*client;
-	int			buttonMask;
-	int			index;
-	char		*pClass;
-	gitem_t		*it;
-	gitem_t		*item;
-	edict_t		*it_ent;
-
-	if (level.intermissiontime)
-		return;
-
-	client = ent->client;
-
-	if (deathmatch->value &&
-		client->pers.spectator != client->resp.spectator &&
-		(level.time - client->respawn_time) >= 5) {
-		spectator_respawn(ent);
-		return;
-	}
-
-	// run weapon animations if it hasn't been done by a ucmd_t
-	if (!client->weapon_thunk && !client->resp.spectator)
-		Think_Weapon (ent);
-	else
-		client->weapon_thunk = false;
-
-	if (ent->deadflag)
-	{
-		// wait for any button just going down
-		if ( level.time > client->respawn_time)
-		{
-			// in deathmatch, only wait for attack button
-			if (deathmatch->value)
-				buttonMask = BUTTON_ATTACK;
-			else
-				buttonMask = -1;
-
-			if ( ( client->latched_buttons & buttonMask ) ||
-				(deathmatch->value && ((int)dmflags->value & DF_FORCE_RESPAWN) ) )
-			{
-				respawn(ent);
-				client->latched_buttons = 0;
-			}
-		}
-		return;
-	}
-
-	// add player trail so monsters can follow
-	if (!deathmatch->value)
-		if (!visible (ent, PlayerTrail_LastSpot() ) )
-			PlayerTrail_Add (ent->s.old_origin);
-
-	client->latched_buttons = 0;
-
-
+	
 	//GUI printing Hoohah
 	switch(ent->client->playerClass)
 	{
@@ -2004,5 +1941,69 @@ void ClientBeginServerFrame (edict_t *ent)
 	
 		//PlayerClass3: g_weapon.c line 450, 
 	}
+}
+
+
+/*
+==============
+ClientBeginServerFrame
+
+This will be called once for each server frame, before running
+any other entities in the world.
+==============
+*/
+void ClientBeginServerFrame (edict_t *ent)
+{
+	gclient_t	*client;
+	int			buttonMask;
+	int			index;
+
+	if (level.intermissiontime)
+		return;
+
+	client = ent->client;
+
+	if (deathmatch->value &&
+		client->pers.spectator != client->resp.spectator &&
+		(level.time - client->respawn_time) >= 5) {
+		spectator_respawn(ent);
+		return;
+	}
+
+	// run weapon animations if it hasn't been done by a ucmd_t
+	if (!client->weapon_thunk && !client->resp.spectator)
+		Think_Weapon (ent);
+	else
+		client->weapon_thunk = false;
+
+	if (ent->deadflag)
+	{
+		// wait for any button just going down
+		if ( level.time > client->respawn_time)
+		{
+			// in deathmatch, only wait for attack button
+			if (deathmatch->value)
+				buttonMask = BUTTON_ATTACK;
+			else
+				buttonMask = -1;
+
+			if ( ( client->latched_buttons & buttonMask ) ||
+				(deathmatch->value && ((int)dmflags->value & DF_FORCE_RESPAWN) ) )
+			{
+				respawn(ent);
+				client->latched_buttons = 0;
+			}
+		}
+		return;
+	}
+
+	// add player trail so monsters can follow
+	if (!deathmatch->value)
+		if (!visible (ent, PlayerTrail_LastSpot() ) )
+			PlayerTrail_Add (ent->s.old_origin);
+
+	client->latched_buttons = 0;
+
+
 
 }
